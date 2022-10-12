@@ -1,7 +1,5 @@
 # UP_onboarding_project
 
-{% if False %}
-
 # Introduction
 
 The goal of this project is to provide minimalistic django project on:-
