@@ -30,6 +30,13 @@ Installing inside virtualenv is recommended, however you can start your project 
 
     
 Activate the virtualenv for your project.
+
+
+Add .env file to the project folder with a Django Security Key:
+
+
+Create a MySQL database with name `up-task` and update the username and password in settings of project directory.
+
     
 Install project dependencies:
 
