@@ -14,7 +14,12 @@ The goal of this project is to provide minimalistic django project on:-
 • Authentication! 
 • Test-cases 
 
+### Techs Used
 
+- `Django`
+- `MySQL`
+- `JWT Authentication`
+- `PyTest`
       
 ### Steps To Reciprocate
 
@@ -22,7 +27,6 @@ The goal of this project is to provide minimalistic django project on:-
 Installing inside virtualenv is recommended, however you can start your project without virtualenv too.
 
 
-# {{ project_name|title }}
 
 # Getting Started
 
