@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'point_of_sale',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'UP_onboarding_system.urls'
@@ -75,9 +79,21 @@ WSGI_APPLICATION = 'UP_onboarding_system.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'up-project',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    },
+    'TEST': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'my_test_database',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
 }
 
 # Password validation
@@ -118,3 +134,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+############### added Later
+
+CORS_ORIGIN_ALLOW_ALL = True
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES':['rest_framework.permissions.AllowAny'],
+#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
+# }
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': ["rest_framework.permissions.IsAuthenticated",],
+#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
+# }
+
+# REST_FRAMEWORK = {
+#  'DEFAULT_PERMISSION_CLASSES':["rest_framework.permissions.IsAuthenticated"],
+#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#        ],
+# }
