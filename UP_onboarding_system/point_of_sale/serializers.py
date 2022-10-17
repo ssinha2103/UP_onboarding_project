@@ -91,3 +91,15 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = ['id', 'user', 'merchant', 'store', 'items']
+
+
+class UserViewSerializers(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+            "profile",
+        )

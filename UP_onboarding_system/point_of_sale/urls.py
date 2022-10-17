@@ -13,6 +13,7 @@ urlpatterns = [
     path("register/", UserRegisterView.as_view(), name='register'),
     path("login/", AuthUserLoginView.as_view(), name='login'),
     path("logout/", api_logout, name='logout'),
+    path("users/", UserListView.as_view(), name="users"),
     path("stores/", StoresView.as_view(), name="stores"),
     path("items/", ItemsView.as_view(), name="items"),
     path("placeorders/", PlaceOrderView.as_view(), name="placeorders"),

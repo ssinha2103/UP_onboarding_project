@@ -20,6 +20,7 @@ def ApiHomepage(request, format=None):
         'Register': reverse_lazy('register', request=request, format=format),
         'Login': reverse_lazy('login', request=request, format=format),
         'Logout': reverse_lazy('logout', request=request, format=format),
+        'Users': reverse_lazy('users', request=request, format=format),
         'Stores': reverse_lazy('stores', request=request, format=format),
         'Items': reverse_lazy('items', request=request, format=format),
         'Place orders': reverse_lazy('placeorders', request=request, format=format),
@@ -150,3 +151,10 @@ class SeeOrderView(generics.ListAPIView):
         profile = Profile.objects.get(user=user)
         orders = Orders.objects.filter(merchant=profile)
         return orders
+
+
+class UserListView(generics.ListCreateAPIView):
+    serializer_class = UserViewSerializers
+    authentication_class = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated, IsMerchant)
+    queryset = User.objects.filter(profile__role=2)
