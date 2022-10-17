@@ -88,6 +88,18 @@ class StoresSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
 
+    def get_fields(self, *args, **kwargs):
+        fields = super(OrderSerializer, self).get_fields(*args, **kwargs)
+        fields['merchant'].queryset = fields['merchant'].queryset.filter(role=1)
+        return fields
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['store'] = StoresSerializer(instance.store).data
+        response['merchant'] = ProfileSerializer(instance.merchant).data
+        return response
+
+
     class Meta:
         model = Orders
         fields = ['id', 'user', 'merchant', 'store', 'items']
