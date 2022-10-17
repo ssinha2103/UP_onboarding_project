@@ -113,16 +113,16 @@ class ItemsView(generics.ListCreateAPIView):
     serializer_class = ItemSerializers
     authentication_class = (JWTAuthentication,)
     permission_classes = (IsAuthenticated, IsMerchant)
-    queryset = Items.objects.all()
+    #queryset = Items.objects.all()
 
-    # def get_queryset(self):
-    #     profile = Profile.objects.get(user=self.request.user)
-    #     items = Items.objects.filter(item_merchant=profile)
-    #     return items
-    #
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        items = Items.objects.filter(stores__merchant=profile)
+        return items
+
     # def perform_create(self, serializer):
     #     profile = Profile.objects.get(user=self.request.user)
-    #     serializer.save(item_merchant=profile)
+    #     serializer.save(stores__merchant=profile)
 
 
 class PlaceOrderView(generics.ListCreateAPIView):
