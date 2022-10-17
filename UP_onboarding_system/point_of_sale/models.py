@@ -34,7 +34,7 @@ class Stores(models.Model):
 
 
 class Items(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=False)
     price = models.IntegerField()
     description = models.TextField()
     stores = models.ForeignKey(Stores, on_delete=models.CASCADE, related_name="items")
@@ -44,6 +44,7 @@ class Items(models.Model):
 
     class Meta:
         verbose_name_plural = "Items"
+        unique_together = ('name', 'stores',)
 
 
 class Orders(models.Model):
