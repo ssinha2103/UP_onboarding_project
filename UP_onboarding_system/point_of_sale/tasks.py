@@ -22,7 +22,7 @@ def create_an_order(pk, data):
     user = User.objects.get(pk=pk)
     serializer.is_valid()
     serializer.save(user=user)
-    return True
+    #return True
     #return serializer
     # _logger.info("CELERY Worked")
     # print("CELERY worked SSSSSSSSSSSSSSSSSSSSS")
