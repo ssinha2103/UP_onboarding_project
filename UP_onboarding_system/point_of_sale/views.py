@@ -15,6 +15,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import IsMerchant, IsConsumer
 from .serializers import *
 
+from .tasks import create_an_order
+
 _logger = logging.getLogger(__name__)
 logger_name = str(_logger).upper()
 
@@ -182,8 +184,11 @@ class PlaceOrderView(generics.ListCreateAPIView):
         return orders
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-        _logger.info(logger_name + ":-" + self.request.user.username + " " + "created a new order")
+        #serializer.save(user=self.request.user)
+        #import ipdb; ipdb.set_trace()
+        pk = self.request.user.pk
+        create_an_order.delay(pk, serializer.data)
+        _logger.info(logger_name + ":-" + self.request.user.username + " " + "created a new order - Celery task")
 
 
 class SeeOrderView(generics.ListAPIView):

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'point_of_sale',
     'rest_framework',
     'corsheaders',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django_structlog.middlewares.RequestMiddleware',
+    'django_structlog.middlewares.CeleryMiddleware',
 ]
 
 ROOT_URLCONF = 'UP_onboarding_system.urls'
@@ -219,3 +221,17 @@ structlog.configure(
     logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=True,
 )
+
+#CELERY_BROKER_URL = 'amqp://localhost:15672/'
+# CELERY_BROKER_URL = config('URI')
+#CELERY_BROKER_POOL_LIMIT = None
+
+#amqp://user:pass%231@localhost:5672
+
+CELERY_BROKER_URL = 'amqp://localhost'
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
+# CELERY_TASK_SERIALIZER = 'json'
