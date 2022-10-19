@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_celery_results',
+    'silk',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django_structlog.middlewares.RequestMiddleware',
     'django_structlog.middlewares.CeleryMiddleware',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'UP_onboarding_system.urls'
