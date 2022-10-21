@@ -2,30 +2,54 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7]
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: mysql
+        ports: ['3306:3306']
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v2
+    - name: Set up Python $
+      uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: $
     - name: Install Dependencies
       run: |
+        cd .\UP_onboarding_system\
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Run Migrations
+      run: python manage.py migrate
+      env: 
+        DBENGINE: django.db.backends.mysql
+        DBNAME: mysql
+        DBUSER: root
+        DBPASSWORD: root
+        DBHOST: 127.0.0.1
+        DBPORT: $
     - name: Run Tests
       run: |
-        cd .\UP_onboarding_system\
         python manage.py test
+      env: 
+        DBENGINE: django.db.backends.mysql
+        DBNAME: mysql
+        DBUSER: root
+        DBPASSWORD: root
+        DBHOST: 127.0.0.1
+        DBPORT: $
