@@ -115,3 +115,9 @@ class UserViewSerializers(serializers.ModelSerializer):
             "email",
             "profile",
         )
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    model = User
+    old_password = serializers.CharField(required = True)
+    new_password = serializers.CharField(required = True)

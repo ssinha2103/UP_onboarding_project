@@ -41,11 +41,12 @@ def ApiHomepage(request, format=None):
         'Register': reverse_lazy('register', request=request, format=format),
         'Login': reverse_lazy('login', request=request, format=format),
         'Logout': reverse_lazy('logout', request=request, format=format),
+        'Change Password': reverse_lazy('change_password', request=request, format=format),
         'Users': reverse_lazy('users', request=request, format=format),
         'Stores': reverse_lazy('stores', request=request, format=format),
         'Items': reverse_lazy('items', request=request, format=format),
-        'Place orders': reverse_lazy('placeorders', request=request, format=format),
-        'View orders': reverse_lazy('seeorders', request=request, format=format),
+        'Place orders': reverse_lazy('place_orders', request=request, format=format),
+        'View orders': reverse_lazy('see_orders', request=request, format=format),
     })
 
 
@@ -270,3 +271,32 @@ class UserListView(generics.ListCreateAPIView):
             _logger.error(event='View Users !', user=self.request.user.username, role=return_role(self.request.user),
                           message="accessed the Merchants List but not in the normal method")
         return people
+
+
+class UserChangePasswordView(generics.UpdateAPIView):
+    serializer_class = UserChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully'
+            }
+            return Response(response)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
