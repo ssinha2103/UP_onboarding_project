@@ -18,6 +18,10 @@ The goal of this project is to provide minimalistic django project on:-
 - `MySQL`
 - `JWT Authentication`
 - `PyTest`
+- `Celery`
+- `RabbitMQ`
+- `Locust`
+- `Silk`
       
 ### Steps To Reciprocate
 
