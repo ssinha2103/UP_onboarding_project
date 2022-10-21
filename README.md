@@ -59,12 +59,13 @@ You can now run the development server:
 
 ### Endpoints for Now
 
-- `//` It opens the home page for the web app where we can see all the listed endpoints.
+- `/` It opens the home page for the web app where we can see all the listed endpoints.
 - `/admin/` It opens the admin page for the Django app.
 - `/register/` For registering users on the basis of Role that are Merchant and Consumer.
 - `/login/` For logging in as Merchant or Consumer.
-- `'token/obtain/'` For the reason, if the user wants to see his/her JWT token.
-- `token/refresh` For the reason, if the user wants to update his/her JWT Token.
+- `'/token/obtain/'` For the reason, if the user wants to see his/her JWT token.
+- `/token/refresh` For the reason, if the user wants to update his/her JWT Token.
+- `/change_password/` Used by any registered user to change their password.
 - `/stores/` Used by Merchant for adding a new and view their registered stores.
 - `/items/` Used by Merchant for adding items under their Registered Stores.
 - `/placeorders/` Used by consumer to place orders.
