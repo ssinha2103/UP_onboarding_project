@@ -69,3 +69,23 @@ You can now run the development server:
 - `/items/` Used by Merchant for adding items under their Registered Stores.
 - `/placeorders/` Used by consumer to place orders.
 - `/seeorders/` Used used by the merchant to see the orders that have been placed that their registered stores.
+
+
+### WEEK_1_Task - [Status-Done]
+- A Web App 
+- Database 
+- RESTful API endpoints for: 
+- Creating merchants, stores and items 
+- APIs should handle list view, detail view, CRUD operations 
+- Authentication! 
+- Test-cases
+
+- Technology Used [Virtualenv, Django, Pytest, Tastypie/DRF, MySQL, Github workflow, JWT]
+
+### WEEK_2_Task -  [Status-Done]
+
+- API endpoint to support orders – creation + list 
+- Generating orders — lots and lots of them! 
+- Asynchronism boost 
+- Understanding what is happening in the system — logs & profiling 
+- Technology Used [Locust, RabbitMQ, Celery, Structlog, Silk]
