@@ -99,7 +99,6 @@ class OrderSerializer(serializers.ModelSerializer):
     #     response['merchant'] = ProfileSerializer(instance.merchant).data
     #     return response
 
-
     class Meta:
         model = Orders
         fields = ['id', 'user', 'merchant', 'store', 'items']
@@ -119,5 +118,5 @@ class UserViewSerializers(serializers.ModelSerializer):
 
 class UserChangePasswordSerializer(serializers.Serializer):
     model = User
-    old_password = serializers.CharField(required = True)
-    new_password = serializers.CharField(required = True)
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
