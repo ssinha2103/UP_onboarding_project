@@ -8,4 +8,5 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path('token/obtain/', jwt_views.TokenObtainPairView.as_view(), name='token_create'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('silk/', include('silk.urls', namespace='silk')),
 ]

@@ -93,12 +93,11 @@ class OrderSerializer(serializers.ModelSerializer):
         fields['merchant'].queryset = fields['merchant'].queryset.filter(role=1)
         return fields
 
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['store'] = StoresSerializer(instance.store).data
-        response['merchant'] = ProfileSerializer(instance.merchant).data
-        return response
-
+    # def to_representation(self, instance):
+    #     response = super().to_representation(instance)
+    #     response['store'] = StoresSerializer(instance.store).data
+    #     response['merchant'] = ProfileSerializer(instance.merchant).data
+    #     return response
 
     class Meta:
         model = Orders
@@ -115,3 +114,9 @@ class UserViewSerializers(serializers.ModelSerializer):
             "email",
             "profile",
         )
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    model = User
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

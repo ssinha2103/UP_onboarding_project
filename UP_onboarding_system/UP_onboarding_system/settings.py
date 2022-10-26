@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-import os
+import os, structlog
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'point_of_sale',
     'rest_framework',
     'corsheaders',
+    'django_celery_results',
+    'silk',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django_structlog.middlewares.RequestMiddleware',
+    'django_structlog.middlewares.CeleryMiddleware',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'UP_onboarding_system.urls'
@@ -138,21 +143,97 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ############### added Later
 
 CORS_ORIGIN_ALLOW_ALL = True
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES':['rest_framework.permissions.AllowAny'],
-#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
-# }
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': ["rest_framework.permissions.IsAuthenticated",],
-#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+        "json_formatter": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(),
+        },
+        "plain_console": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.dev.ConsoleRenderer(),
+        },
+        "key_value": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.KeyValueRenderer(key_order=['timestamp', 'level', 'event', '_logger']),
+        },
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': str(BASE_DIR) + '/debug.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        "json_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": str(BASE_DIR) + '/json.log',
+            "formatter": "json_formatter",
+        },
+        "flat_line_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": str(BASE_DIR) + '/flat_line.log',
+            "formatter": "key_value",
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        },
+        "django_structlog": {
+            "handlers": ["flat_line_file", "json_file"],
+            "level": "INFO",
+        },
+    },
+}
 
-# REST_FRAMEWORK = {
-#  'DEFAULT_PERMISSION_CLASSES':["rest_framework.permissions.IsAuthenticated"],
-#     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#        ],
-# }
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    cache_logger_on_first_use=True,
+)
+
+#CELERY_BROKER_URL = 'amqp://localhost:15672/'
+# CELERY_BROKER_URL = config('URI')
+#CELERY_BROKER_POOL_LIMIT = None
+
+#amqp://user:pass%231@localhost:5672
+
+CELERY_BROKER_URL = 'amqp://localhost'
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
+# CELERY_TASK_SERIALIZER = 'json'
