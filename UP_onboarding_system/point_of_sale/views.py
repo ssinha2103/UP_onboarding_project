@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from .utils import log_db_queries
 
 from .permissions import IsMerchant, IsConsumer
 from .serializers import *
@@ -66,6 +67,7 @@ class UserRegisterView(APIView):
     permission_classes = (AllowAny,)
     _logger.info(event='New User Registration !', into='User Registration page')
 
+    @log_db_queries
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         valid = serializer.is_valid(raise_exception=True)
@@ -99,6 +101,7 @@ class AuthUserLoginView(APIView):
     permission_classes = (AllowAny,)
     _logger.info(event='User Login !', into='User Login page')
 
+    @log_db_queries
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         valid = serializer.is_valid(raise_exception=True)
@@ -138,6 +141,7 @@ class StoresView(generics.ListCreateAPIView):
     # _logger.info(logger_name + ":-" + " Someone is trying to access Store page")
     _logger.info(event='Stores View !', into='Store View page')
 
+    @log_db_queries
     def get_queryset(self):
         # _logger.info(logger_name + ":-" + self.request.user.username + " " + "is trying to access Store page")
         _logger.info(event='Stores View !', user=self.request.user.username, role=return_role(self.request.user),
@@ -154,6 +158,7 @@ class StoresView(generics.ListCreateAPIView):
                             message='was not able to access stores')
         return stores
 
+    @log_db_queries
     def perform_create(self, serializer):
         profile = Profile.objects.get(user=self.request.user)
         serializer.save(merchant=profile)
@@ -171,6 +176,7 @@ class ItemsView(generics.ListCreateAPIView):
 
     # queryset = Items.objects.all()
 
+    @log_db_queries
     def get_queryset(self):
         # _logger.info(logger_name + ":-" + self.request.user.username + " " + "is trying to access Items page")
         _logger.info(event='Items View !', user=self.request.user.username, role=return_role(self.request.user),
@@ -199,6 +205,7 @@ class PlaceOrderView(generics.ListCreateAPIView):
     authentication_class = (JWTAuthentication,)
     permission_classes = (IsAuthenticated, IsConsumer)
 
+    @log_db_queries
     def get_queryset(self):
         orders = Orders.objects.filter(user=self.request.user)
         if orders:
@@ -212,6 +219,7 @@ class PlaceOrderView(generics.ListCreateAPIView):
                             message='was not able to access their placed orders')
         return orders
 
+    @log_db_queries
     def perform_create(self, serializer):
         # serializer.save(user=self.request.user)
         # import ipdb; ipdb.set_trace()
@@ -232,6 +240,7 @@ class SeeOrderView(generics.ListAPIView):
     # def get_queryset(self):
     #     orders = Orders.objects.filter(user=self.request.user)
     #     return orders
+    @log_db_queries
     def get_queryset(self):
         user = User.objects.get(username=self.request.user)
         profile = Profile.objects.get(user=user)
@@ -255,6 +264,7 @@ class UserListView(generics.ListCreateAPIView):
     authentication_class = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    @log_db_queries
     def get_queryset(self):
         user = self.request.user
         current_profile_role = return_role(user)
@@ -278,10 +288,12 @@ class UserChangePasswordView(generics.UpdateAPIView):
     model = User
     permission_classes = (IsAuthenticated,)
 
+    @log_db_queries
     def get_object(self, queryset=None):
         obj = self.request.user
         return obj
 
+    @log_db_queries
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
