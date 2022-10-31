@@ -14,6 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password_2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
@@ -21,8 +22,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "password",
+            "password_2",
             "profile",
         )
+
+    def validate(self, data):
+        password = data.get('password')
+        password_2 = data.get('password_2')
+        if password != password_2:
+            raise serializers.ValidationError("Password Doesn't Match")
+        return data
 
     def validate_email(self, value):
         lower_email = value.lower()
@@ -110,9 +119,7 @@ class UserViewSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "username",
-            "email",
-            "profile",
+            "username", "email", "profile",
         )
 
 
