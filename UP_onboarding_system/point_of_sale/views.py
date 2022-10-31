@@ -2,6 +2,11 @@ import json
 # Logging Stuff
 # import logging
 import structlog
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+import redis
+from django.conf import settings
 
 from rest_framework import generics
 from rest_framework import status
@@ -23,6 +28,10 @@ from .tasks import create_an_order
 
 _logger = structlog.get_logger(__name__)
 logger_name = str(_logger).upper()
+
+# Redis Instance
+redis_instance = redis.StrictRedis(host='127.0.0.1', port=6379, db="UP_pos")
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
 def return_role(user):
@@ -165,6 +174,11 @@ class StoresView(generics.ListCreateAPIView):
         # _logger.info(logger_name + ":-" + self.request.user.username + " " + "created a new store")
         _logger.info(event='Stores View !', user=self.request.user.username, role=return_role(self.request.user),
                      message='created a new store')
+
+    @log_db_queries
+    @method_decorator(cache_page(CACHE_TTL))
+    def dispatch(self, *args, **kwargs):
+        return super(StoresView, self).dispatch(*args, **kwargs)
 
 
 class ItemsView(generics.ListCreateAPIView):
